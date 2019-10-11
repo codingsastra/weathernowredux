@@ -49,25 +49,42 @@ export function getWeatherInfoFailed(error) {
     }
 }
 
+//thunk action
 export function getWeatherInfo(zipCode) {
     console.log('calling api')
     return (dispatch) => {
+        
         dispatch(getWeatherInfoStarted())
 
-        let url = `http://api.openweathermap.org/data/2.5/weather?zip=${zipCode},us&appid=6644e680d2025e3820e93d0f13adb2ff`;
-
-        fetch(url)
+        let weatherUrl = `http://api.openweathermap.org/data/2.5/weather?zip=${zipCode},us&appid=6644e680d2025e3820e93d0f13adb2ff`;
+        var geoUrl=`http://api.geonames.org/postalCodeSearchJSON?postalcode=${zipCode}&maxRows=10&username=varmab`
+                
+        fetch(weatherUrl)
             .then(response => response.json())
             .then(weatherInfo => {
-                console.log(JSON.stringify(weatherInfo))
-                let tempFarnheit = Math.round(9 / 5 * (weatherInfo.main.temp - 273) + 32);
-                let place = {
-                    area: weatherInfo.name,
-                    description: weatherInfo.weather[0].description,
-                    temparature: tempFarnheit
-                }
-                console.log(JSON.stringify(place))
-                dispatch(addPlace(place));
+                fetch(geoUrl)
+                    .then(response => response.json())
+                    .then(gpsInfo => {
+                        let tempFarnheit = Math.round(9 / 5 * (weatherInfo.main.temp - 273) + 32);
+                        let place={
+                            zipCode,
+                            weather:{
+                                area: weatherInfo.name,
+                                description: weatherInfo.weather[0].description,
+                                temparature: tempFarnheit
+                            },
+                            gps:{
+                                latitude:gpsInfo.postalCodes[0].lat,
+                                longitude:gpsInfo.postalCodes[0].lng,
+                            }
+                        }
+                        dispatch(addPlace(place))
+                        dispatch(getWeatherInfoSuccess(weather));
+                    })
+                    .catch((err)=>{
+                        dispatch(getWeatherInfoFailed(err));
+                    })
+                
             })
             .catch((err) => {
                 dispatch(getWeatherInfoFailed(err));
@@ -83,14 +100,23 @@ const places = (state = [], action) => {
         case ADD_PLACE:
             return [
                 ...state,
-                {
+                {   
                     id:state.length+1,
-                    ...action.place
+                    zipCode:action.place.zipCode,
+                    weather:{
+                        area: action.place.weather.area,
+                        description: action.place.weather.description,
+                        temparature: action.place.weather.temparature
+                    },
+                    gps:{
+                        longitude:action.place.gps.longitude,
+                        latitude:action.place.gps.latitude
+                    }
                 }
             ]
         case REMOVE_PLACE:
-            return state.map((currentPlace) => {
-                return currentPlace.id != action.place.id
+            return state.filter((currentPlace) => {
+                return currentPlace.zipCode != action.place.zipCode
             })
         default:
             return state;
@@ -100,7 +126,7 @@ const places = (state = [], action) => {
 const weatherInfo = (state = {
     loading: false,
     error: false,
-    place: {
+    weather: {
         area: '',
         description: '',
         temparature: ''
@@ -112,7 +138,7 @@ const weatherInfo = (state = {
             return {
                 loading: true,
                 error: false,
-                place: {
+                weather: {
                     area: '',
                     description: '',
                     temparature: ''
@@ -122,16 +148,15 @@ const weatherInfo = (state = {
             return {
                 loading: false,
                 error: false,
-                place: {
-                    ...action.place,
-                    id:state.length+1
+                weather: {
+                    ...action.weather
                 }
             }
         case GET_WEATHERINFO_FAILED:
             return {
                 loading: false,
                 error: true,
-                place: {
+                weather: {
                     area: '',
                     description: '',
                     temparature: ''

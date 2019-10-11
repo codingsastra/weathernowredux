@@ -18,13 +18,17 @@
       "backgroundColor": "#ffffff"
     },
     "updates": {
-      "fallbackToCacheTimeout": 0
+      "fallbackToCacheTimeout": 0,
+      "enabled":true
     },
     "assetBundlePatterns": [
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "config":{
+        "googleMapsApiKey":"AIzaSyCkUPsainM9O6UP4TE5YyJeCzUZptnrqwY"
+      }
     }
   }
 }

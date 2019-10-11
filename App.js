@@ -1,20 +1,27 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import WeatherNow from './containers/WeatherNow';
+import Weather from './containers/Weather';
+import Map from './containers/Map'
 
-export default function App() {
-  return (
-    <View style={styles.container}>
-      <WeatherNow/>
-    </View>
-  );
-}
+import {createStackNavigator} from 'react-navigation-stack'
+import { createAppContainer } from 'react-navigation'
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+const AppNavigator=createStackNavigator({
+  Weather:Weather,
+  Map:Map
+},{
+  initialRouteName:"Weather",
+  navigationOptions:{
+    title:'Weather Now',
+    headerStyle: {
+        backgroundColor:'#EA4C89'
+    },
+    headerTintColor:'#fff',
+    headerTintStyle:{
+        fontWeight:'bold'
+    }
+  }
+})
+
+const AppContainer=createAppContainer(AppNavigator);
+export default AppContainer;
+

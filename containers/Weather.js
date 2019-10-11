@@ -9,10 +9,13 @@ import {
 } from 'react-native';
 
 import Zipcode from '../components/Zipcode';
-//import Places from '../components/Places'
-import PlacesFlatlist from '../components/PlacesFlatlist'
+import Places from '../components/Places'
 
-class WeatherNow extends Component {
+class Weather extends Component {
+    static navigationOptions={
+        title:'Weather',
+        header: null
+    }
     render() {
         return (
             <SafeAreaView style={styles.container}>
@@ -23,7 +26,7 @@ class WeatherNow extends Component {
                     <Zipcode/>
                 </View>
                 <View style={styles.placesView}>
-                    <PlacesFlatlist/>
+                    <Places navigation={this.props.navigation}/>
                 </View>
             </SafeAreaView>
         )
@@ -58,4 +61,4 @@ var styles = StyleSheet.create({
     }
 })
 
-export default WeatherNow;
+export default Weather;

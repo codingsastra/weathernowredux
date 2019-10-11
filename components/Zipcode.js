@@ -1,5 +1,4 @@
 import React, { Component } from 'react'
-
 import { store, getWeatherInfo} from '../redux_weather'
 
 import {
@@ -15,7 +14,9 @@ class Zipcode extends Component{
     constructor(){
         super();
         this.state={
-            zipCode:''
+            zipCode:'',
+            longitude:'',
+            latitude:''
         }
     }
 
@@ -27,11 +28,19 @@ class Zipcode extends Component{
 
     onFind=()=>{
         store.dispatch(getWeatherInfo(this.state.zipCode));
-        
         this.setState({
             zipCode:''
         })
         Keyboard.dismiss(); //Dismiss Keyboard after submit
+    }
+
+    componentDidMount(){
+        navigator.geolocation.getCurrentPosition((position)=>{
+            this.setState({
+                longitude:position.coords.longitude,
+                latitude:position.coords.latitude
+            })
+        })
     }
 
     render(){
@@ -41,6 +50,7 @@ class Zipcode extends Component{
                 <TouchableHighlight style={styles.button} onPress={this.onFind}>
                     <Text>Add Place</Text>
                 </TouchableHighlight>
+                <Text>Current Location: {this.state.longitude + "/" + this.state.latitude}</Text>
             </View>
         )
     }

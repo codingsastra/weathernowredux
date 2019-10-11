@@ -4,7 +4,8 @@ import {
     View,
     Text,
     Button,
-    StyleSheet
+    StyleSheet,
+    ActivityIndicator
 } from 'react-native';
 
 import { store,removePlace } from '../redux_weather'
@@ -12,9 +13,8 @@ import { store,removePlace } from '../redux_weather'
 class WeatherCard extends Component{
     constructor(props){
         super(props);
-        console.log("weather card",props);
         this.state={
-            place:props.place
+            place:props.place,
         }
     }
 
@@ -38,10 +38,10 @@ class WeatherCard extends Component{
             <View style={styles.container}>
                 <View style={styles.titleView}>
                     <Button onPress={this.onRemove} title="x" color="white" style={styles.closeButton}/>
-                    <Text style={styles.areaText}>{this.state.place.id + " " + this.state.place.area}</Text>
+                    <Text style={styles.areaText}>{this.state.place.weather.area}</Text>
                 </View>
-                <View style={styles.tempText}>{this.displaySuperscript(this.state.place.temparature,"0")}</View>
-                <Text style={styles.descriptionText}>{this.state.place.description}</Text>
+                <View style={styles.tempText}>{this.displaySuperscript(this.state.place.weather.temparature,"0")}</View>
+                <Text style={styles.descriptionText}>{this.state.place.weather.description}</Text>
             </View>
         )
     }
@@ -59,19 +59,21 @@ var styles=StyleSheet.create({
     closeButton:{
         color:"white",
         fontSize:30,
-        marginLeft:10
+        marginLeft:10,
+        width:'10%'
     },
     titleView:{
         flexDirection:"row",
         width:"100%",
-        justifyContent:"flex-start"
+        justifyContent:"space-around"
     },
     areaText:{
         color:"white",
         fontSize:60,
         fontWeight:"bold",
         paddingLeft:10,
-        marginLeft:100
+        marginLeft:0,
+        width:'80%'
     },
 
     tempText:{
